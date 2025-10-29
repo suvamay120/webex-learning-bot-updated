@@ -1,0 +1,29 @@
+[
+  {
+    "id": "L001",
+    "email": "suprofs@gmail.com",
+    "fullName": "Alice Johnson",
+    "courseName": "Python Basics",
+    "startDate": "2025-09-15",
+    "endDate": "2025-11-10",
+    "activityStatus": "moderately_active"
+  },
+  {
+    "id": "L002",
+    "email": "suprofs@gmail.com",
+    "fullName": "Bob Singh",
+    "courseName": "Data Science 101",
+    "startDate": "2025-09-01",
+    "endDate": "2025-11-05",
+    "activityStatus": "inactive"
+  },
+  {
+    "id": "L003",
+    "email": "suprofs@gmail.com",
+    "fullName": "Carol Diaz",
+    "courseName": "AWS Foundations",
+    "startDate": "2025-10-01",
+    "endDate": "2025-11-30",
+    "activityStatus": "moderately_active"
+  }
+]

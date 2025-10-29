@@ -1,0 +1,21 @@
+{
+  "type": "module",
+  "name": "webex-learning-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-lambda-local": "sam local invoke CheckAttendanceFunction -e src/stateMachine/input.sample.json --env-vars env.json",
+    "start-stepfunctions-local": "sam local start-stepfunctions",
+    "workflow-local": "node src/stateMachine/runLocal.js src/stateMachine/input.sample.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.913.0",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3"
+  }
+}

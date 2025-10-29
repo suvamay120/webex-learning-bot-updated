@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Webex Learning Bot with Step Functions workflow.
+
+Globals:
+  Function:
+    Runtime: nodejs18.x
+    MemorySize: 128
+    Timeout: 30
+
+Resources:
+  CheckAttendanceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/checkAttendance/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+
+  ReminderHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/reminderHandler/index.handler
+      CodeUri: ./
+
+  SendMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/sendMessage/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+          WEBEX_BOT_TOKEN_SECRET_NAME: WebexBotToken
+          WEBEX_MESSGING_API_URL: https://webexapis.com/v1/messages
+          LOG_FILE_PATH: /tmp/messages.log
+      Policies:
+        - SecretsManagerReadWritePolicy:
+            SecretId: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:WebexBotToken-*'
+
+  LearningWorkflowStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      Type: EXPRESS
+      DefinitionUri: src/stateMachine/learningWorkflow.asl.json
+      DefinitionSubstitutions:
+        CheckAttendanceFnArn: !GetAtt CheckAttendanceFunction.Arn
+        ReminderHandlerFnArn: !GetAtt ReminderHandlerFunction.Arn
+        SendMessageFnArn: !GetAtt SendMessageFunction.Arn
+      Policies:
+        - LambdaInvokePolicy:
+            FunctionName: !Ref CheckAttendanceFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ReminderHandlerFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SendMessageFunction
+
+Outputs:
+  CheckAttendanceFunctionArn:
+    Description: ARN of the CheckAttendance Lambda Function
+    Value: !GetAtt CheckAttendanceFunction.Arn
+  ReminderHandlerFunctionArn:
+    Description: ARN of the ReminderHandler Lambda Function
+    Value: !GetAtt ReminderHandlerFunction.Arn
+  SendMessageFunctionArn:
+    Description: ARN of the SendMessage Lambda Function
+    Value: !GetAtt SendMessageFunction.Arn
+  LearningWorkflowStateMachineArn:
+    Description: ARN of the Learning Workflow State Machine
+    Value: !Ref LearningWorkflowStateMachine

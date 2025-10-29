@@ -1,0 +1,53 @@
+{
+  "Comment": "Learning workflow to filter learners, compose reminders, and send messages",
+  "StartAt": "CheckAttendance",
+  "States": {
+    "CheckAttendance": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${CheckAttendanceFnArn}",
+        "Payload.$": "$"
+      },
+      "ResultSelector": {
+        "payload.$": "$.Payload"
+      },
+      "ResultPath": "$.check",
+      "Next": "ComposeMessages"
+    },
+    "ComposeMessages": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${ReminderHandlerFnArn}",
+        "Payload.$": "$.check.payload"
+      },
+      "ResultSelector": {
+        "payload.$": "$.Payload"
+      },
+      "ResultPath": "$.compose",
+      "Next": "SendMessages"
+    },
+    "SendMessages": {
+      "Type": "Map",
+      "ItemsPath": "$.compose.payload.messages",
+      "Iterator": {
+        "StartAt": "SendMessage",
+        "States": {
+          "SendMessage": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::lambda:invoke",
+            "Parameters": {
+              "FunctionName": "${SendMessageFnArn}",
+              "Payload.$": "$"
+            },
+            "ResultPath": "$.result",
+            "End": true
+          }
+        }
+      },
+      "ResultPath": "$.sendResults",
+      "End": true
+    }
+  }
+}
