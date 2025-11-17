@@ -7,11 +7,23 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const handler = async (event = {}) => {
-  const activityStatus = event.activityStatus || 'moderately_active';
+  // Accept learners from input (array at root or event.learners), else fallback to file.
   const daysThreshold = event.daysThreshold ?? 15;
+  // When activityStatus is omitted, include all activities.
+  const activityStatusFilter = event.activityStatus ?? undefined;
 
-  const learners = await getLearners();
-  const filtered = filterLearners(learners, activityStatus, daysThreshold).map(l => ({
+  let sourceLearners;
+  if (Array.isArray(event)) {
+    sourceLearners = event;
+  } else if (Array.isArray(event.learners)) {
+    sourceLearners = event.learners;
+  } else {
+    sourceLearners = await getLearners();
+  }
+
+  console.log(`[check] input: daysThreshold=${daysThreshold} activityFilter=${activityStatusFilter ?? 'all'} totalLearners=${sourceLearners.length}`);
+
+  const filtered = filterLearners(sourceLearners, activityStatusFilter, daysThreshold).map(l => ({
     id: l.id,
     email: l.email,
     fullName: l.fullName,
@@ -21,12 +33,14 @@ export const handler = async (event = {}) => {
     activityStatus: l.activityStatus
   }));
 
+  console.log(`[check] output: eligible=${filtered.length}`);
+
   return {
     learners: filtered,
     meta: {
       count: filtered.length,
       daysThreshold,
-      activityStatus
+      activityStatus: activityStatusFilter
     }
   };
 };

@@ -9,18 +9,17 @@ src/
   functions/
     checkAttendance/       # Step 1: filter learners by status + end date
     reminderHandler/       # Step 2: compose personalized messages
-    sendMessage/           # Step 3: send messages + log results
+    enqueueMessages/       # Step 3: push messages to SQS (batch)
+    notificationHandler/   # SQS consumer: sends messages via Webex
   shared/
     dbService.js           # reads from src/shared/learners.json (dummy data)
     utils.js               # date math + filtering helpers
     webexService.js        # Webex API wrapper
     logger.js              # file-based logging
     learners.json          # sample learner records
-  config/webexConfig.js    # Webex API URL
   stateMachine/
     learningWorkflow.asl.json  # Step Functions definition
-    input.sample.json          # sample input for local runs
-template.yaml                  # SAM resources (3 Lambdas + State Machine)
+template.yaml                  # SAM resources (4 Lambdas + State Machine)
 ```
 
 ## Setup
@@ -33,8 +32,8 @@ template.yaml                  # SAM resources (3 Lambdas + State Machine)
 
 2. Environment variables:
 
-   - Local: create `.env` with `WEBEX_BOT_TOKEN`, `AWS_REGION`, and optionally `WEBEX_MESSGING_API_URL`.
-   - SAM local: `env.json` provides env vars for `SendMessageFunction`.
+   - Local: create `.env` if you run functions directly. For NotificationHandler, set `WEBEX_BOT_TOKEN`, `REGION`, and optionally `WEBEX_MESSGING_API_URL`.
+   - SAM local: `env.json` provides env vars for `CheckAttendanceFunction`, `ReminderHandlerFunction`, `EnqueueMessagesFunction`, and `NotificationHandlerFunction`.
 
 ## Local Testing
 
@@ -44,11 +43,13 @@ template.yaml                  # SAM resources (3 Lambdas + State Machine)
   npm run start-lambda-local
   ```
 
-- Run Step Functions locally:
+- Orchestrate the local workflow (Check → Compose → Enqueue to SQS):
 
   ```bash
-  npm run start-stepfunctions-local
+  npm run workflow-local
   ```
+
+Messages are sent by `NotificationHandler` when it consumes the SQS queue (in AWS or via `sam local invoke NotificationHandlerFunction`).
 
   In another terminal, start an execution using AWS CLI (adjust ARN if needed):
 

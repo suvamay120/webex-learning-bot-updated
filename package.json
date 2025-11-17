@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-lambda-local": "sam local invoke CheckAttendanceFunction -e src/stateMachine/input.sample.json --env-vars env.json",
+    "start-lambda-local": "sam local invoke CheckAttendanceFunction -e src/shared/learners.json --env-vars env.json",
     "start-stepfunctions-local": "sam local start-stepfunctions",
-    "workflow-local": "node src/stateMachine/runLocal.js src/stateMachine/input.sample.json"
+    "start-lambda-local-win": "\"C:\\Program Files\\Amazon\\AWSSAMCLI\\sam.exe\" local invoke CheckAttendanceFunction -e src/shared/learners.json --env-vars env.json",
+    "start-stepfunctions-local-win": "\"C:\\Program Files\\Amazon\\AWSSAMCLI\\sam.exe\" local start-stepfunctions",
+    "workflow-local": "powershell -File scripts/workflow-sam-local.ps1 -InputPath src/shared/learners.json"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +17,7 @@
   "description": "",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.913.0",
+    "@aws-sdk/client-sqs": "^3.913.0",
     "axios": "^1.12.2",
     "dotenv": "^17.2.3"
   }

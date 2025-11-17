@@ -16,28 +16,76 @@ Resources:
       CodeUri: ./
       Environment:
         Variables:
-          AWS_REGION: !Ref AWS::Region
+          REGION: !Ref AWS::Region
 
   ReminderHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/functions/reminderHandler/index.handler
       CodeUri: ./
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
 
-  SendMessageFunction:
+
+  # SQS Dead-letter queue for failed notification deliveries
+  NotificationDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NotificationDLQ
+      MessageRetentionPeriod: 1209600 # 14 days
+
+  # Main SQS queue to decouple reminder production from delivery
+  NotificationQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: NotificationQueue
+      VisibilityTimeout: 60
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt NotificationDLQ.Arn
+        maxReceiveCount: 5
+
+  # Lambda that consumes messages from NotificationQueue and sends via Webex (and later SES)
+  NotificationHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/functions/sendMessage/index.handler
+      Handler: src/functions/notificationHandler/index.handler
       CodeUri: ./
       Environment:
         Variables:
-          AWS_REGION: !Ref AWS::Region
+          REGION: !Ref AWS::Region
+          NODE_ENV: production
           WEBEX_BOT_TOKEN_SECRET_NAME: WebexBotToken
+          # Keep existing env var name alignment; also allow corrected name
           WEBEX_MESSGING_API_URL: https://webexapis.com/v1/messages
+          WEBEX_MESSAGING_API_URL: https://webexapis.com/v1/messages
           LOG_FILE_PATH: /tmp/messages.log
       Policies:
+        - SQSPollerPolicy:
+            QueueName: !Ref NotificationQueue
         - SecretsManagerReadWritePolicy:
             SecretId: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:WebexBotToken-*'
+      Events:
+        NotificationSQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt NotificationQueue.Arn
+            BatchSize: 5
+            Enabled: true
+
+  # Lambda to enqueue composed messages to SQS in bulk
+  EnqueueMessagesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/enqueueMessages/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          REGION: !Ref AWS::Region
+          NOTIFICATION_QUEUE_URL: !Ref NotificationQueue
+      Policies:
+        - SQSSendMessagePolicy:
+            QueueName: !Ref NotificationQueue
 
   LearningWorkflowStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -47,14 +95,14 @@ Resources:
       DefinitionSubstitutions:
         CheckAttendanceFnArn: !GetAtt CheckAttendanceFunction.Arn
         ReminderHandlerFnArn: !GetAtt ReminderHandlerFunction.Arn
-        SendMessageFnArn: !GetAtt SendMessageFunction.Arn
+        EnqueueMessagesFnArn: !GetAtt EnqueueMessagesFunction.Arn
       Policies:
         - LambdaInvokePolicy:
             FunctionName: !Ref CheckAttendanceFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref ReminderHandlerFunction
         - LambdaInvokePolicy:
-            FunctionName: !Ref SendMessageFunction
+            FunctionName: !Ref EnqueueMessagesFunction
 
 Outputs:
   CheckAttendanceFunctionArn:
@@ -63,9 +111,15 @@ Outputs:
   ReminderHandlerFunctionArn:
     Description: ARN of the ReminderHandler Lambda Function
     Value: !GetAtt ReminderHandlerFunction.Arn
-  SendMessageFunctionArn:
-    Description: ARN of the SendMessage Lambda Function
-    Value: !GetAtt SendMessageFunction.Arn
+  NotificationQueueUrl:
+    Description: URL of the Notification SQS Queue
+    Value: !Ref NotificationQueue
+  NotificationHandlerFunctionArn:
+    Description: ARN of the NotificationHandler Lambda Function
+    Value: !GetAtt NotificationHandlerFunction.Arn
+  EnqueueMessagesFunctionArn:
+    Description: ARN of the EnqueueMessages Lambda Function
+    Value: !GetAtt EnqueueMessagesFunction.Arn
   LearningWorkflowStateMachineArn:
     Description: ARN of the Learning Workflow State Machine
     Value: !Ref LearningWorkflowStateMachine

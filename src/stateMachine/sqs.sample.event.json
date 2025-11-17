@@ -1,0 +1,164 @@
+{
+  "Records": [
+    {
+      "messageId": "1",
+      "receiptHandle": "AQE...1",
+      "body": "{\"email\":\"alice@example.com\",\"text\":\"Daily reminder: Finish module 3.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-1",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "2",
+      "receiptHandle": "AQE...2",
+      "body": "{\"email\":\"bob@example.com\",\"text\":\"Don’t forget today’s session at 5 PM.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-2",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "3",
+      "receiptHandle": "AQE...3",
+      "body": "{\"email\":\"carol@example.com\",\"text\":\"Quiz opens at 6 PM — be ready!\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-3",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "4",
+      "receiptHandle": "AQE...4",
+      "body": "{\"email\":\"dave@example.com\",\"text\":\"Complete your practice tasks today.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-4",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "5",
+      "receiptHandle": "AQE...5",
+      "body": "{\"email\":\"eve@example.com\",\"text\":\"Reminder: Watch lecture replay by tonight.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-5",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "6",
+      "receiptHandle": "AQE...6",
+      "body": "{\"email\":\"frank@example.com\",\"text\":\"Submit assignment 2 by 8 PM.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-6",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "7",
+      "receiptHandle": "AQE...7",
+      "body": "{\"email\":\"grace@example.com\",\"text\":\"Group discussion at 7 PM today.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-7",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "8",
+      "receiptHandle": "AQE...8",
+      "body": "{\"email\":\"heidi@example.com\",\"text\":\"Office hours starting at 4 PM.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-8",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "9",
+      "receiptHandle": "AQE...9",
+      "body": "{\"email\":\"ivan@example.com\",\"text\":\"Practice quiz closes in 2 hours.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-9",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    },
+    {
+      "messageId": "10",
+      "receiptHandle": "AQE...10",
+      "body": "{\"email\":\"judy@example.com\",\"text\":\"New resources uploaded — check the portal.\"}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1731800000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1731800000001"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "md5-10",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:NotificationQueue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

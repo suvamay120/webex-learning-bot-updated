@@ -4,8 +4,8 @@
     "email": "suprofs@gmail.com",
     "fullName": "Alice Johnson",
     "courseName": "Python Basics",
-    "startDate": "2025-09-15",
-    "endDate": "2025-11-10",
+    "startDate": "2025-10-20",
+    "endDate": "2025-11-24",
     "activityStatus": "moderately_active"
   },
   {
@@ -13,8 +13,8 @@
     "email": "suprofs@gmail.com",
     "fullName": "Bob Singh",
     "courseName": "Data Science 101",
-    "startDate": "2025-09-01",
-    "endDate": "2025-11-05",
+    "startDate": "2025-10-15",
+    "endDate": "2025-11-22",
     "activityStatus": "inactive"
   },
   {
@@ -22,8 +22,71 @@
     "email": "suprofs@gmail.com",
     "fullName": "Carol Diaz",
     "courseName": "AWS Foundations",
-    "startDate": "2025-10-01",
+    "startDate": "2025-10-25",
     "endDate": "2025-11-30",
+    "activityStatus": "moderately_active"
+  },
+  {
+    "id": "L004",
+    "email": "suprofs@gmail.com",
+    "fullName": "David Lee",
+    "courseName": "React Basics",
+    "startDate": "2025-10-10",
+    "endDate": "2025-11-25",
+    "activityStatus": "active"
+  },
+  {
+    "id": "L005",
+    "email": "suprofs@gmail.com",
+    "fullName": "Eva Kumar",
+    "courseName": "SQL Fundamentals",
+    "startDate": "2025-10-05",
+    "endDate": "2025-11-28",
+    "activityStatus": "inactive"
+  },
+  {
+    "id": "L006",
+    "email": "suprofs@gmail.com",
+    "fullName": "Frank Miller",
+    "courseName": "Node.js Essentials",
+    "startDate": "2025-10-18",
+    "endDate": "2025-11-23",
+    "activityStatus": "moderately_active"
+  },
+  {
+    "id": "L007",
+    "email": "suprofs@gmail.com",
+    "fullName": "Grace Patel",
+    "courseName": "Cloud 101",
+    "startDate": "2025-10-12",
+    "endDate": "2025-11-27",
+    "activityStatus": "highly_active"
+  },
+  {
+    "id": "L008",
+    "email": "suprofs@gmail.com",
+    "fullName": "Henry Zhang",
+    "courseName": "DevOps Basics",
+    "startDate": "2025-10-07",
+    "endDate": "2025-11-26",
+    "activityStatus": "inactive"
+  },
+  {
+    "id": "L009",
+    "email": "suprofs@gmail.com",
+    "fullName": "Ivy Chen",
+    "courseName": "JavaScript Advanced",
+    "startDate": "2025-10-28",
+    "endDate": "2025-11-29",
+    "activityStatus": "active"
+  },
+  {
+    "id": "L010",
+    "email": "suprofs@gmail.com",
+    "fullName": "Jack Wilson",
+    "courseName": "Python for Data",
+    "startDate": "2025-10-22",
+    "endDate": "2025-12-01",
     "activityStatus": "moderately_active"
   }
 ]

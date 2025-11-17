@@ -26,27 +26,20 @@
         "payload.$": "$.Payload"
       },
       "ResultPath": "$.compose",
-      "Next": "SendMessages"
+      "Next": "EnqueueMessages"
     },
-    "SendMessages": {
-      "Type": "Map",
-      "ItemsPath": "$.compose.payload.messages",
-      "Iterator": {
-        "StartAt": "SendMessage",
-        "States": {
-          "SendMessage": {
-            "Type": "Task",
-            "Resource": "arn:aws:states:::lambda:invoke",
-            "Parameters": {
-              "FunctionName": "${SendMessageFnArn}",
-              "Payload.$": "$"
-            },
-            "ResultPath": "$.result",
-            "End": true
-          }
-        }
+    
+    "EnqueueMessages": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "${EnqueueMessagesFnArn}",
+        "Payload.$": "$.compose.payload"
       },
-      "ResultPath": "$.sendResults",
+      "ResultSelector": {
+        "payload.$": "$.Payload"
+      },
+      "ResultPath": "$.enqueue",
       "End": true
     }
   }
