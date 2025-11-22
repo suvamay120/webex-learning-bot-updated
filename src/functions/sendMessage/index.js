@@ -3,6 +3,7 @@ import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-sec
 import { sendWebexMessage } from '../../shared/webexService.js';
 import { WEBEX_API_URL } from '../../config/webexConfig.js';
 import { logToFile } from '../../shared/logger.js';
+import { markUserNotified } from '../../shared/dynamoService.js';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -35,6 +36,9 @@ export const handler = async (event = {}) => {
     const result = await sendWebexMessage(email, text, token, WEBEX_API_URL);
     const logMsg = `[${new Date().toISOString()}] Sent to ${email} | id=${result.id}`;
     logToFile(logMsg);
+    if (process.env.USERS_TABLE_NAME && event?.meta?.id) {
+      await markUserNotified(event.meta.id);
+    }
 
     return { success: true, messageId: result.id, email };
   } catch (err) {

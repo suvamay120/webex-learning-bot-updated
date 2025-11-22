@@ -9,6 +9,31 @@ Globals:
     Timeout: 30
 
 Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+
+  RulesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: ruleId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: ruleId
+          KeyType: HASH
+
+  InputDataBucket:
+    Type: AWS::S3::Bucket
+
   CheckAttendanceFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -17,7 +42,9 @@ Resources:
       Environment:
         Variables:
           AWS_REGION: !Ref AWS::Region
-
+          USERS_TABLE_NAME: !Ref UsersTable
+          RULES_TABLE_NAME: !Ref RulesTable
+    
   ReminderHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -35,9 +62,35 @@ Resources:
           WEBEX_BOT_TOKEN_SECRET_NAME: WebexBotToken
           WEBEX_MESSGING_API_URL: https://webexapis.com/v1/messages
           LOG_FILE_PATH: /tmp/messages.log
+          USERS_TABLE_NAME: !Ref UsersTable
       Policies:
         - SecretsManagerReadWritePolicy:
             SecretId: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:WebexBotToken-*'
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+
+  IngestFromS3Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/ingestFromS3/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+          USERS_TABLE_NAME: !Ref UsersTable
+          INPUT_BUCKET_NAME: !Ref InputDataBucket
+          INPUT_OBJECT_KEY: input/users.json
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+        - S3ReadPolicy:
+            BucketName: !Ref InputDataBucket
+      Events:
+        IngestSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(1 day)
+            Enabled: false
 
   LearningWorkflowStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -57,6 +110,18 @@ Resources:
             FunctionName: !Ref SendMessageFunction
 
 Outputs:
+  UsersTableName:
+    Description: Name of the Users DynamoDB Table
+    Value: !Ref UsersTable
+  RulesTableName:
+    Description: Name of the Rules DynamoDB Table
+    Value: !Ref RulesTable
+  InputDataBucketName:
+    Description: Name of the input S3 bucket
+    Value: !Ref InputDataBucket
+  SeedRulesFunctionArn:
+    Description: ARN of the Seed Rules Lambda Function
+    Value: !GetAtt SeedRulesFunction.Arn
   CheckAttendanceFunctionArn:
     Description: ARN of the CheckAttendance Lambda Function
     Value: !GetAtt CheckAttendanceFunction.Arn
@@ -69,3 +134,15 @@ Outputs:
   LearningWorkflowStateMachineArn:
     Description: ARN of the Learning Workflow State Machine
     Value: !Ref LearningWorkflowStateMachine
+  SeedRulesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/seedRules/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+          RULES_TABLE_NAME: !Ref RulesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RulesTable
