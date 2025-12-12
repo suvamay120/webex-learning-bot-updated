@@ -65,7 +65,7 @@ Resources:
           USERS_TABLE_NAME: !Ref UsersTable
       Policies:
         - SecretsManagerReadWritePolicy:
-            SecretId: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:WebexBotToken-*'
+            SecretName: WebexBotToken
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
 
@@ -91,6 +91,19 @@ Resources:
           Properties:
             Schedule: rate(1 day)
             Enabled: false
+
+  SeedRulesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/functions/seedRules/index.handler
+      CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+          RULES_TABLE_NAME: !Ref RulesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RulesTable
 
   LearningWorkflowStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -133,16 +146,4 @@ Outputs:
     Value: !GetAtt SendMessageFunction.Arn
   LearningWorkflowStateMachineArn:
     Description: ARN of the Learning Workflow State Machine
-    Value: !Ref LearningWorkflowStateMachine
-  SeedRulesFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/functions/seedRules/index.handler
-      CodeUri: ./
-      Environment:
-        Variables:
-          AWS_REGION: !Ref AWS::Region
-          RULES_TABLE_NAME: !Ref RulesTable
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref RulesTable
+    Value: !GetAtt LearningWorkflowStateMachine.Arn

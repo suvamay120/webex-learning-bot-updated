@@ -24,6 +24,7 @@ async function getBotToken() {
 }
 
 export const handler = async (event = {}) => {
+  console.log('SendMessageFunction invoked with event:', JSON.stringify(event));
   try {
     const { email, text } = event;
     if (!email || !text) {

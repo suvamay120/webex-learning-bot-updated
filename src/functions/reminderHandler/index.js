@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const handler = async (input = {}) => {
+  console.log('ReminderHandlerFunction invoked with input:', JSON.stringify(input));
   const { learners = [], meta = {} } = input;
   const { activityStatus = 'moderately_active', daysThreshold = 15, rules = {} } = meta;
 

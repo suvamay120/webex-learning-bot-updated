@@ -8,6 +8,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const handler = async (event = {}) => {
+  console.log('CheckAttendanceFunction invoked with event:', JSON.stringify(event));
   const defaults = await getRules();
   const activityStatus = event.activityStatus || defaults.activityStatus || 'moderately_active';
   const daysThreshold = event.daysThreshold ?? defaults.daysThreshold ?? 15;
