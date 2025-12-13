@@ -7,7 +7,7 @@
       "Resource": "arn:aws:states:::lambda:invoke",
       "Parameters": {
         "FunctionName": "${CheckAttendanceFnArn}",
-        "Payload.$": "$"
+        "Payload": {}
       },
       "ResultSelector": {
         "payload.$": "$.Payload"

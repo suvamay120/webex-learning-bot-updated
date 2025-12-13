@@ -31,6 +31,17 @@ Resources:
         - AttributeName: ruleId
           KeyType: HASH
 
+  CoursesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: courseId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: courseId
+          KeyType: HASH
+
   InputDataBucket:
     Type: AWS::S3::Bucket
 
@@ -44,12 +55,30 @@ Resources:
           AWS_REGION: !Ref AWS::Region
           USERS_TABLE_NAME: !Ref UsersTable
           RULES_TABLE_NAME: !Ref RulesTable
+          COURSES_TABLE_NAME: !Ref CoursesTable
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref UsersTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref RulesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CoursesTable
     
   ReminderHandlerFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/functions/reminderHandler/index.handler
       CodeUri: ./
+      Environment:
+        Variables:
+          AWS_REGION: !Ref AWS::Region
+          COURSES_TABLE_NAME: !Ref CoursesTable
+          RULES_TABLE_NAME: !Ref RulesTable
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref CoursesTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref RulesTable
 
   SendMessageFunction:
     Type: AWS::Serverless::Function
@@ -101,9 +130,12 @@ Resources:
         Variables:
           AWS_REGION: !Ref AWS::Region
           RULES_TABLE_NAME: !Ref RulesTable
+          COURSES_TABLE_NAME: !Ref CoursesTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref RulesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref CoursesTable
 
   LearningWorkflowStateMachine:
     Type: AWS::Serverless::StateMachine
@@ -129,6 +161,9 @@ Outputs:
   RulesTableName:
     Description: Name of the Rules DynamoDB Table
     Value: !Ref RulesTable
+  CoursesTableName:
+    Description: Name of the Courses DynamoDB Table
+    Value: !Ref CoursesTable
   InputDataBucketName:
     Description: Name of the input S3 bucket
     Value: !Ref InputDataBucket

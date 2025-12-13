@@ -1,19 +1,29 @@
-{
-  "ruleId": "default",
-  "daysThreshold": 10,
-  "defaultActivityStatus": "moderately_active",
-  "courseRules": {
-    "Python Basics": {
-      "minClassesRequired": 8,
-      "closingSoonDays": 7
-    },
-    "Data Science 101": {
-      "minClassesRequired": 12,
-      "closingSoonDays": 10
-    },
-    "AWS Foundations": {
-      "minClassesRequired": 6,
-      "closingSoonDays": 5
-    }
+[
+  {
+    "ruleId": "course-attend",
+    "name": "Course Attend Notification",
+    "description": "Notify enrolled users when a course date is 3 days away",
+    "type": "course_upcoming_soon",
+    "config": { "daysBefore": 3 },
+    "message": "Hi {{fullName}}, your course {{courseName}} is in {{daysToGo}} days on {{courseDate}}. Please attend.",
+    "active": true
+  },
+  {
+    "ruleId": "course-missed",
+    "name": "Course Missed Notification",
+    "description": "Notify enrolled users one day after the course date if they missed",
+    "type": "course_missed",
+    "config": { "daysAfter": 1 },
+    "message": "Hi {{fullName}}, your course {{courseName}} on {{courseDate}} was missed. Please reschedule or enroll again.",
+    "active": true
+  },
+  {
+    "ruleId": "weekly-upcoming",
+    "name": "Weekly Upcoming Course Broadcast",
+    "description": "Send weekly notifications listing courses in the upcoming month to users not enrolled",
+    "type": "weekly_broadcast",
+    "config": { "dayOfWeek": "Monday" },
+    "message": "Hi {{fullName}}, upcoming courses next month: {{coursesList}}. Reply to enroll.",
+    "active": true
   }
-}
+]

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { UserModel } from '../../shared/dynamooseModels.js';
+import { UserModel, CourseModel } from '../../shared/dynamooseModels.js';
 import crypto from 'crypto';
 
 if (process.env.NODE_ENV !== 'production') {
@@ -42,6 +42,18 @@ export const handler = async () => {
       console.log(JSON.stringify({ stage: 'no_data', reason: Array.isArray(data) ? 'empty_array' : 'not_array' }));
       return { upserted: 0, skipped: 0 };
     }
+    const courses = await (async () => {
+      try {
+        if (process.env.COURSES_TABLE_NAME) {
+          const items = await CourseModel.scan().exec();
+          return items || [];
+        }
+        return [];
+      } catch {
+        return [];
+      }
+    })();
+    const courseByName = new Map((courses || []).map(c => [c.name, c.courseId]));
     let upserted = 0;
     let skipped = 0;
     for (const u of Array.isArray(data) ? data : []) {
@@ -49,13 +61,16 @@ export const handler = async () => {
         userId: u.id || crypto.randomUUID(),
         email: u.email,
         fullName: u.fullName,
-        courseName: u.courseName,
-        startDate: u.startDate,
-        endDate: u.endDate,
-        activityStatus: u.activityStatus || 'moderately_active',
-        attendedClasses: u.attendedClasses ?? 0,
-        lastClassDate: u.lastClassDate || null,
-        upcomingNextClassDate: u.upcomingNextClassDate || null,
+        enrolledCourseIds: Array.isArray(u.enrolledCourseIds)
+          ? u.enrolledCourseIds
+          : Array.isArray(u.enrolledCourses)
+            ? u.enrolledCourses.map(n => courseByName.get(n)).filter(Boolean)
+            : (u.courseName ? [courseByName.get(u.courseName)].filter(Boolean) : []),
+        attendedCourseIds: Array.isArray(u.attendedCourseIds)
+          ? u.attendedCourseIds
+          : Array.isArray(u.attendedCourses)
+            ? u.attendedCourses.map(n => courseByName.get(n)).filter(Boolean)
+            : [],
         notificationState: u.notificationState || 'pending',
         updatedAt: new Date().toISOString()
       };

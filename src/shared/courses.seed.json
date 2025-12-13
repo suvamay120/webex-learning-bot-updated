@@ -1,0 +1,17 @@
+[
+  {
+    "courseId": "FS001",
+    "name": "Fire Safety at Workplace",
+    "date": "2026-01-20"
+  },
+  {
+    "courseId": "CS001",
+    "name": "Cyber Security Awareness",
+    "date": "2026-01-25"
+  },
+  {
+    "courseId": "ER001",
+    "name": "Workplace Ergonomics",
+    "date": "2026-02-02"
+  }
+]

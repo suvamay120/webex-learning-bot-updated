@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { getRulesList } from '../../shared/dynamoService.js';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -6,42 +7,38 @@ if (process.env.NODE_ENV !== 'production') {
 
 export const handler = async (input = {}) => {
   console.log('ReminderHandlerFunction invoked with input:', JSON.stringify(input));
-  const { learners = [], meta = {} } = input;
-  const { activityStatus = 'moderately_active', daysThreshold = 15, rules = {} } = meta;
+  const { notifications = [], meta = {} } = input;
+  const rules = await getRulesList();
+  const map = new Map((rules || []).map(r => [r.ruleId, r]));
 
-  const messages = learners.map(l => {
-    const courseRule = rules?.courseRules?.[l.courseName] || {};
-    const minReq = courseRule.minClassesRequired ?? 0;
-    const closingSoonDays = courseRule.closingSoonDays ?? daysThreshold;
-    const isInactive = l.activityStatus === 'inactive';
-    const closingSoon = l.daysLeft <= closingSoonDays;
-    const belowThreshold = (l.attendedClasses ?? 0) < minReq;
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const missedYesterday = l.lastClassDate ? new Date(l.lastClassDate) < yesterday : false;
+  function applyTemplate(tpl, ctx) {
+    return (tpl || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (_, k) => {
+      if (k === 'coursesList') {
+        const list = (ctx.coursesList || []).map(c => `${c.name} on ${c.date}`).join('; ');
+        return list;
+      }
+      return ctx[k] != null ? String(ctx[k]) : '';
+    });
+  }
 
-    const base = `Hi ${l.fullName}, your course ${l.courseName} is ending in ${l.daysLeft} days`;
-    let text = `${base}.`;
-    if (isInactive) {
-      text = `${base}. Your activity appears inactive. Please login and resume classes.`;
-    } else if (closingSoon && belowThreshold) {
-      text = `${base}. You have attended ${l.attendedClasses ?? 0} classes; minimum required is ${minReq}. Please catch up before the course closes.`;
-    } else if (closingSoon) {
-      text = `${base}. Please complete your classes to meet completion criteria.`;
-    } else if (belowThreshold) {
-      text = `${base}. You have not met the minimum class threshold (${minReq}). Please attend upcoming sessions.`;
-    } else if (missedYesterday && l.upcomingNextClassDate) {
-      text = `${base}. You missed yesterday's class. Next class is on ${l.upcomingNextClassDate}. Please attend.`;
-    }
+  const messages = notifications.map(n => {
+    const rule = map.get(n.ruleId) || {};
+    const text = applyTemplate(rule.message, {
+      fullName: n.fullName,
+      courseName: n.courseName,
+      daysToGo: n.daysToGo,
+      courseDate: n.courseDate,
+      coursesList: n.coursesList
+    }) || '';
     return {
-      email: l.email,
+      email: n.email,
       text,
-      meta: { id: l.id, daysLeft: l.daysLeft, activityStatus: l.activityStatus, daysThreshold, minReq, closingSoonDays }
+      meta: { id: n.userId, type: n.type, ruleId: n.ruleId }
     };
   });
 
   return {
     messages,
-    meta: { count: messages.length, activityStatus, daysThreshold }
+    meta: { count: messages.length, rulesApplied: meta?.rulesApplied }
   };
 };

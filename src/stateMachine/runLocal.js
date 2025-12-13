@@ -37,9 +37,9 @@ async function main() {
     }
 
     const check = await checkAttendance(input);
-    console.log('[debug] CheckAttendance:', JSON.stringify({ count: check?.meta?.count ?? (check?.learners?.length ?? 0), activityStatus: check?.meta?.activityStatus, daysThreshold: check?.meta?.daysThreshold }, null, 2));
-    const compose = await reminderHandler({ learners: check.learners, meta: check.meta });
-    console.log('[debug] ComposeMessages:', JSON.stringify({ requested: compose?.messages?.length ?? 0, activityStatus: compose?.meta?.activityStatus, daysThreshold: compose?.meta?.daysThreshold }, null, 2));
+    console.log('[debug] CheckAttendance:', JSON.stringify({ count: check?.meta?.count ?? (check?.notifications?.length ?? 0), rulesApplied: check?.meta?.rulesApplied }, null, 2));
+    const compose = await reminderHandler({ notifications: check.notifications, meta: check.meta });
+    console.log('[debug] ComposeMessages:', JSON.stringify({ requested: compose?.messages?.length ?? 0 }, null, 2));
 
     const results = [];
     for (const msg of compose.messages) {

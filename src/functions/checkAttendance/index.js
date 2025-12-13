@@ -1,41 +1,21 @@
 import dotenv from 'dotenv';
-import { getLearners } from '../../shared/dbService.js';
-import { daysUntil, filterLearners } from '../../shared/utils.js';
-import { getRules, getUsersForNotification } from '../../shared/dynamoService.js';
+import { getRulesList, getCourses, getAllUsers, computeNotifications } from '../../shared/dynamoService.js';
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
-export const handler = async (event = {}) => {
-  console.log('CheckAttendanceFunction invoked with event:', JSON.stringify(event));
-  const defaults = await getRules();
-  const activityStatus = event.activityStatus || defaults.activityStatus || 'moderately_active';
-  const daysThreshold = event.daysThreshold ?? defaults.daysThreshold ?? 15;
-
-  let filtered;
-  if (process.env.USERS_TABLE_NAME) {
-    filtered = await getUsersForNotification(activityStatus, daysThreshold);
-  } else {
-    const learners = await getLearners();
-    filtered = filterLearners(learners, activityStatus, daysThreshold).map(l => ({
-      id: l.id,
-      email: l.email,
-      fullName: l.fullName,
-      courseName: l.courseName,
-      endDate: l.endDate,
-      daysLeft: daysUntil(l.endDate),
-      activityStatus: l.activityStatus
-    }));
-  }
+export const handler = async () => {
+  const rules = await getRulesList();
+  const courses = await getCourses();
+  const users = await getAllUsers();
+  const notifications = computeNotifications(rules, users, courses);
 
   return {
-    learners: filtered,
+    notifications,
     meta: {
-      count: filtered.length,
-      daysThreshold,
-      activityStatus,
-      rules: defaults
+      count: notifications.length,
+      rulesApplied: rules.map(r => r.ruleId)
     }
   };
 };
