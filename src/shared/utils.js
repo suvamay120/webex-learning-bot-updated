@@ -7,7 +7,7 @@ export function daysUntilDate(dateStr) {
 
 export function isWithinDaysBefore(dateStr, daysBefore) {
   const d = daysUntilDate(dateStr);
-  return d === daysBefore;
+  return d >= 0 && d <= daysBefore;
 }
 
 export function daysAfterDate(dateStr) {
@@ -19,5 +19,14 @@ export function daysAfterDate(dateStr) {
 
 export function isMissedByDays(dateStr, daysAfter) {
   const d = daysAfterDate(dateStr);
-  return d === daysAfter;
+  return d > 0 && d <= daysAfter;
+}
+
+export function addMonths(dateStr, months) {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + months);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
 }

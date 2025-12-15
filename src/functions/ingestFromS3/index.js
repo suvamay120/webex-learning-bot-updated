@@ -54,6 +54,7 @@ export const handler = async () => {
       }
     })();
     const courseByName = new Map((courses || []).map(c => [c.name, c.courseId]));
+    console.log(JSON.stringify({ stage: 'courses_loaded', count: courses.length }));
     let upserted = 0;
     let skipped = 0;
     for (const u of Array.isArray(data) ? data : []) {
@@ -61,6 +62,7 @@ export const handler = async () => {
         userId: u.id || crypto.randomUUID(),
         email: u.email,
         fullName: u.fullName,
+        joiningDate: u.joiningDate || null,
         enrolledCourseIds: Array.isArray(u.enrolledCourseIds)
           ? u.enrolledCourseIds
           : Array.isArray(u.enrolledCourses)

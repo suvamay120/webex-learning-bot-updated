@@ -43,8 +43,10 @@ export const handler = async () => {
       }
     }
 
+    console.log(JSON.stringify({ stage: 'seed_done', rulesInserted, coursesInserted }));
     return { rulesInserted, coursesInserted };
   } catch (err) {
+    console.error(JSON.stringify({ stage: 'seed_error', error: err.message }));
     return { error: err.message };
   }
 };

@@ -33,18 +33,21 @@ export const handler = async (event = {}) => {
 
     const token = await getBotToken();
     if (!token) throw new Error('WEBEX_BOT_TOKEN not available');
+    console.log(JSON.stringify({ stage: 'token_ok', email, text_length: text.length }));
 
     const result = await sendWebexMessage(email, text, token, WEBEX_API_URL);
     const logMsg = `[${new Date().toISOString()}] Sent to ${email} | id=${result.id}`;
     logToFile(logMsg);
     if (process.env.USERS_TABLE_NAME && event?.meta?.id) {
       await markUserNotified(event.meta.id);
+      console.log(JSON.stringify({ stage: 'marked_notified', userId: event.meta.id }));
     }
 
     return { success: true, messageId: result.id, email };
   } catch (err) {
     const logMsg = `[${new Date().toISOString()}] Failed for ${event?.email || 'unknown'} | error=${err.message}`;
     logToFile(logMsg);
+    console.error(JSON.stringify({ stage: 'send_error', email: event?.email || null, error: err.message }));
     return { success: false, error: err.message, email: event?.email || null };
   }
 };

@@ -2,16 +2,16 @@
   {
     "courseId": "FS001",
     "name": "Fire Safety at Workplace",
-    "date": "2026-01-20"
+    "description": "Learn essential fire safety practices and emergency response at the workplace."
   },
   {
     "courseId": "CS001",
     "name": "Cyber Security Awareness",
-    "date": "2026-01-25"
+    "description": "Understand common cyber threats and how to protect company and personal data."
   },
   {
     "courseId": "ER001",
     "name": "Workplace Ergonomics",
-    "date": "2026-02-02"
+    "description": "Improve posture and workstation setup to reduce strain and injury."
   }
 ]

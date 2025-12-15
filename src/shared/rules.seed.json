@@ -1,29 +1,20 @@
 [
   {
-    "ruleId": "course-attend",
-    "name": "Course Attend Notification",
-    "description": "Notify enrolled users when a course date is 3 days away",
-    "type": "course_upcoming_soon",
-    "config": { "daysBefore": 3 },
-    "message": "Hi {{fullName}}, your course {{courseName}} is in {{daysToGo}} days on {{courseDate}}. Please attend.",
+    "ruleId": "joining-3m-soon",
+    "name": "Joining 3-Month Completion Reminder",
+    "description": "Notify 7 days before 3 months from joining if courses incomplete",
+    "type": "joining_window_before",
+    "config": { "daysBefore": 7 },
+    "message": "Hi {{fullName}}, your 3-month completion date is in {{daysToGo}} days on {{threeMonthDate}}. You still have {{remainingCount}} course(s) to complete.",
     "active": true
   },
   {
-    "ruleId": "course-missed",
-    "name": "Course Missed Notification",
-    "description": "Notify enrolled users one day after the course date if they missed",
-    "type": "course_missed",
-    "config": { "daysAfter": 1 },
-    "message": "Hi {{fullName}}, your course {{courseName}} on {{courseDate}} was missed. Please reschedule or enroll again.",
-    "active": true
-  },
-  {
-    "ruleId": "weekly-upcoming",
-    "name": "Weekly Upcoming Course Broadcast",
-    "description": "Send weekly notifications listing courses in the upcoming month to users not enrolled",
-    "type": "weekly_broadcast",
-    "config": { "dayOfWeek": "Monday" },
-    "message": "Hi {{fullName}}, upcoming courses next month: {{coursesList}}. Reply to enroll.",
+    "ruleId": "joining-3m-after",
+    "name": "Joining 3-Month Post-Completion Reminder",
+    "description": "Notify up to 7 days after 3 months from joining if courses incomplete",
+    "type": "joining_window_after",
+    "config": { "daysAfter": 7 },
+    "message": "Hi {{fullName}}, you have passed your 3-month completion date ({{threeMonthDate}}). You still have {{remainingCount}} course(s) to complete.",
     "active": true
   }
 ]

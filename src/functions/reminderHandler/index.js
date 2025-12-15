@@ -25,10 +25,9 @@ export const handler = async (input = {}) => {
     const rule = map.get(n.ruleId) || {};
     const text = applyTemplate(rule.message, {
       fullName: n.fullName,
-      courseName: n.courseName,
       daysToGo: n.daysToGo,
-      courseDate: n.courseDate,
-      coursesList: n.coursesList
+      threeMonthDate: n.threeMonthDate,
+      remainingCount: n.remainingCount
     }) || '';
     return {
       email: n.email,
@@ -36,6 +35,11 @@ export const handler = async (input = {}) => {
       meta: { id: n.userId, type: n.type, ruleId: n.ruleId }
     };
   });
+  const typeCounts = notifications.reduce((acc, n) => {
+    acc[n.type] = (acc[n.type] || 0) + 1;
+    return acc;
+  }, {});
+  console.log(JSON.stringify({ stage: 'compose_done', messages: messages.length, typeCounts }));
 
   return {
     messages,

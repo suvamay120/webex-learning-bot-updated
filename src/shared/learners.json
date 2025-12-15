@@ -3,6 +3,7 @@
     "id": "L001",
     "email": "suprofs@gmail.com",
     "fullName": "Alice Johnson",
+    "joiningDate": "2025-10-01",
     "enrolledCourseIds": ["FS001"],
     "attendedCourseIds": []
   },
@@ -10,6 +11,7 @@
     "id": "L002",
     "email": "suprofs@gmail.com",
     "fullName": "Bob Singh",
+    "joiningDate": "2025-09-15",
     "enrolledCourseIds": ["CS001", "FS001"],
     "attendedCourseIds": ["CS001"]
   },
@@ -17,6 +19,7 @@
     "id": "L003",
     "email": "suprofs@gmail.com",
     "fullName": "Carol Diaz",
+    "joiningDate": "2025-12-01",
     "enrolledCourseIds": [],
     "attendedCourseIds": []
   }

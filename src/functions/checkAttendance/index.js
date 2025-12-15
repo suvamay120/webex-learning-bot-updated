@@ -6,10 +6,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const handler = async () => {
+  console.log('CheckAttendanceFunction start');
   const rules = await getRulesList();
   const courses = await getCourses();
   const users = await getAllUsers();
+  console.log(JSON.stringify({ stage: 'input_counts', rules: rules.length, courses: courses.length, users: users.length }));
   const notifications = computeNotifications(rules, users, courses);
+  console.log(JSON.stringify({ stage: 'computed', notifications: notifications.length }));
 
   return {
     notifications,

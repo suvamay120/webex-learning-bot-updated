@@ -18,6 +18,7 @@ const UserSchema = new dynamoose.Schema({
   uid: { type: String, default: () => crypto.randomUUID() },
   email: String,
   fullName: String,
+  joiningDate: String,
   enrolledCourseIds: { type: Array, schema: [String] },
   attendedCourseIds: { type: Array, schema: [String] },
   notificationState: { type: String, default: 'pending' },
@@ -39,7 +40,7 @@ const CourseSchema = new dynamoose.Schema({
   courseId: { type: String, hashKey: true },
   uid: { type: String, default: () => crypto.randomUUID() },
   name: String,
-  date: String
+  description: String
 }, { saveUnknown: true });
 
 export const UserModel = dynamoose.model(usersTableName, UserSchema);
