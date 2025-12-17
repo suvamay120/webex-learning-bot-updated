@@ -20,7 +20,7 @@ const UserSchema = new dynamoose.Schema({
   fullName: String,
   joiningDate: String,
   enrolledCourseIds: { type: Array, schema: [String] },
-  attendedCourseIds: { type: Array, schema: [String] },
+  completedCourseIds: { type: Array, schema: [String] },
   notificationState: { type: String, default: 'pending' },
   updatedAt: String
 }, { saveUnknown: true });

@@ -68,11 +68,13 @@ export const handler = async () => {
           : Array.isArray(u.enrolledCourses)
             ? u.enrolledCourses.map(n => courseByName.get(n)).filter(Boolean)
             : (u.courseName ? [courseByName.get(u.courseName)].filter(Boolean) : []),
-        attendedCourseIds: Array.isArray(u.attendedCourseIds)
-          ? u.attendedCourseIds
-          : Array.isArray(u.attendedCourses)
-            ? u.attendedCourses.map(n => courseByName.get(n)).filter(Boolean)
-            : [],
+        completedCourseIds: Array.isArray(u.completedCourseIds)
+          ? u.completedCourseIds
+          : Array.isArray(u.attendedCourseIds)
+            ? u.attendedCourseIds
+            : Array.isArray(u.attendedCourses)
+              ? u.attendedCourses.map(n => courseByName.get(n)).filter(Boolean)
+              : [],
         notificationState: u.notificationState || 'pending',
         updatedAt: new Date().toISOString()
       };

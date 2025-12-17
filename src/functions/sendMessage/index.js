@@ -14,13 +14,20 @@ const secretsClient = new SecretsManagerClient({
 });
 
 async function getBotToken() {
-  if (process.env.NODE_ENV !== 'production') {
+  // 1. Try environment variable first (Local Dev / CI)
+  if (process.env.WEBEX_BOT_TOKEN) {
     return process.env.WEBEX_BOT_TOKEN;
   }
-  const secretName = process.env.WEBEX_BOT_TOKEN_SECRET_NAME || 'WebexBotToken';
-  const data = await secretsClient.send(new GetSecretValueCommand({ SecretId: secretName }));
-  if ('SecretString' in data) return data.SecretString;
-  throw new Error('Secret is not a string');
+
+  // 2. Fallback to AWS Secrets Manager (Production)
+  try {
+    const secretName = process.env.WEBEX_BOT_TOKEN_SECRET_NAME || 'WebexBotToken';
+    const data = await secretsClient.send(new GetSecretValueCommand({ SecretId: secretName }));
+    if ('SecretString' in data) return data.SecretString;
+  } catch (err) {
+    console.warn(`[Warning] Could not retrieve secret '${process.env.WEBEX_BOT_TOKEN_SECRET_NAME || 'WebexBotToken'}': ${err.message}`);
+  }
+  return null;
 }
 
 export const handler = async (event = {}) => {
@@ -33,6 +40,16 @@ export const handler = async (event = {}) => {
 
     const token = await getBotToken();
     if (!token) throw new Error('WEBEX_BOT_TOKEN not available');
+    
+    // Debug logging for token (safe)
+    const tokenPreview = token.length > 10 ? `${token.substring(0, 10)}...` : '***';
+    console.log(JSON.stringify({ 
+      stage: 'token_check', 
+      tokenLength: token.length, 
+      tokenPreview,
+      isString: typeof token === 'string'
+    }));
+
     console.log(JSON.stringify({ stage: 'token_ok', email, text_length: text.length }));
 
     const result = await sendWebexMessage(email, text, token, WEBEX_API_URL);
@@ -47,7 +64,16 @@ export const handler = async (event = {}) => {
   } catch (err) {
     const logMsg = `[${new Date().toISOString()}] Failed for ${event?.email || 'unknown'} | error=${err.message}`;
     logToFile(logMsg);
-    console.error(JSON.stringify({ stage: 'send_error', email: event?.email || null, error: err.message }));
+    
+    // Detailed error logging
+    const errorDetails = {
+      message: err.message,
+      status: err.response?.status,
+      statusText: err.response?.statusText,
+      data: err.response?.data
+    };
+    
+    console.error(JSON.stringify({ stage: 'send_error', email: event?.email || null, error: errorDetails }));
     return { success: false, error: err.message, email: event?.email || null };
   }
 };

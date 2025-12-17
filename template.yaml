@@ -7,6 +7,9 @@ Globals:
     Runtime: nodejs18.x
     MemorySize: 128
     Timeout: 30
+    Environment:
+      Variables:
+        NODE_ENV: production
 
 Resources:
   UsersTable:
@@ -114,12 +117,6 @@ Resources:
             TableName: !Ref UsersTable
         - S3ReadPolicy:
             BucketName: !Ref InputDataBucket
-      Events:
-        IngestSchedule:
-          Type: Schedule
-          Properties:
-            Schedule: rate(1 day)
-            Enabled: false
 
   SeedRulesFunction:
     Type: AWS::Serverless::Function

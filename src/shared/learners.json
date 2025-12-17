@@ -5,7 +5,7 @@
     "fullName": "Alice Johnson",
     "joiningDate": "2025-10-01",
     "enrolledCourseIds": ["FS001"],
-    "attendedCourseIds": []
+    "completedCourseIds": []
   },
   {
     "id": "L002",
@@ -13,7 +13,7 @@
     "fullName": "Bob Singh",
     "joiningDate": "2025-09-15",
     "enrolledCourseIds": ["CS001", "FS001"],
-    "attendedCourseIds": ["CS001"]
+    "completedCourseIds": ["CS001"]
   },
   {
     "id": "L003",
@@ -21,6 +21,6 @@
     "fullName": "Carol Diaz",
     "joiningDate": "2025-12-01",
     "enrolledCourseIds": [],
-    "attendedCourseIds": []
+    "completedCourseIds": []
   }
 ]

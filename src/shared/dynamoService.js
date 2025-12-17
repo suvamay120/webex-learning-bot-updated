@@ -48,7 +48,7 @@ export async function getAllUsers() {
       fullName: u.fullName,
       joiningDate: u.joiningDate,
       enrolledCourseIds: u.enrolledCourseIds || [],
-      attendedCourseIds: u.attendedCourseIds || [],
+      completedCourseIds: u.completedCourseIds || [],
       notificationState: 'pending'
     })) : [];
   }
@@ -59,7 +59,7 @@ export async function getAllUsers() {
     fullName: i.fullName,
     joiningDate: i.joiningDate,
     enrolledCourseIds: Array.isArray(i.enrolledCourseIds) ? i.enrolledCourseIds : [],
-    attendedCourseIds: Array.isArray(i.attendedCourseIds) ? i.attendedCourseIds : [],
+    completedCourseIds: Array.isArray(i.completedCourseIds) ? i.completedCourseIds : [],
     notificationState: i.notificationState || 'pending'
   }));
 }
@@ -69,8 +69,8 @@ export function computeNotifications(rules, users, courses) {
   const activeRules = (rules || []).filter(r => r.active !== false);
   for (const u of users || []) {
     const enrolledIds = Array.isArray(u.enrolledCourseIds) ? u.enrolledCourseIds : [];
-    const attendedIds = new Set(Array.isArray(u.attendedCourseIds) ? u.attendedCourseIds : []);
-    const remainingCount = enrolledIds.filter(cid => !attendedIds.has(cid)).length;
+    const completedIds = new Set(Array.isArray(u.completedCourseIds) ? u.completedCourseIds : []);
+    const remainingCount = enrolledIds.filter(cid => !completedIds.has(cid)).length;
     const threeMonthDate = u?.joiningDate ? addMonths(u.joiningDate, 3) : null;
     if (!threeMonthDate) continue;
     for (const r of activeRules) {

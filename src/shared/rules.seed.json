@@ -4,7 +4,7 @@
     "name": "Joining 3-Month Completion Reminder",
     "description": "Notify 7 days before 3 months from joining if courses incomplete",
     "type": "joining_window_before",
-    "config": { "daysBefore": 7 },
+    "config": { "c": 7 },
     "message": "Hi {{fullName}}, your 3-month completion date is in {{daysToGo}} days on {{threeMonthDate}}. You still have {{remainingCount}} course(s) to complete.",
     "active": true
   },
