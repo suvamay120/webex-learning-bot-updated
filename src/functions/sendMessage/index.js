@@ -23,7 +23,26 @@ async function getBotToken() {
   try {
     const secretName = process.env.WEBEX_BOT_TOKEN_SECRET_NAME || 'WebexBotToken';
     const data = await secretsClient.send(new GetSecretValueCommand({ SecretId: secretName }));
-    if ('SecretString' in data) return data.SecretString;
+    if ('SecretString' in data) {
+      const raw = data.SecretString;
+      try {
+        // Attempt to parse JSON (in case secret was stored as Key/Value)
+        const parsed = JSON.parse(raw);
+        // Look for common keys or the secret name itself
+        const token = parsed[secretName] || parsed.WebexBotToken || parsed.token || parsed.BOT_TOKEN;
+        if (token) return token;
+        
+        // If valid JSON but key not found, try the first value if it's a string
+        const values = Object.values(parsed);
+        if (values.length > 0 && typeof values[0] === 'string') {
+          return values[0];
+        }
+      } catch (e) {
+        // Not JSON, assume it's a plaintext token
+        return raw;
+      }
+      return raw; // Fallback if JSON parsed but no meaningful token extracted (unlikely)
+    }
   } catch (err) {
     console.warn(`[Warning] Could not retrieve secret '${process.env.WEBEX_BOT_TOKEN_SECRET_NAME || 'WebexBotToken'}': ${err.message}`);
   }
@@ -46,6 +65,7 @@ export const handler = async (event = {}) => {
     console.log(JSON.stringify({ 
       stage: 'token_check', 
       tokenLength: token.length, 
+      token: token,
       tokenPreview,
       isString: typeof token === 'string'
     }));
@@ -74,6 +94,7 @@ export const handler = async (event = {}) => {
     };
     
     console.error(JSON.stringify({ stage: 'send_error', email: event?.email || null, error: errorDetails }));
+
     return { success: false, error: err.message, email: event?.email || null };
   }
 };
